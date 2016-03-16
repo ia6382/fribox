@@ -1,5 +1,10 @@
 {
     "name": "FriBox",
     "version": "0.0.1",
-    "description": "Brezplačna alternativa storitvi Dropbox"
+    "description": "Brezplačna alternativa storitvi Dropbox",
+    "dependencies":{
+        "mime": "latest",
+        "formidable": "latest",
+        "fs-extra": "latest"
+    }
 }

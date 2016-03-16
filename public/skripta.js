@@ -1,6 +1,7 @@
 window.addEventListener('load', function() {
 	//stran nalozena
 	
+	
 	var prizgiCakanje = function() {
 		document.querySelector(".loading").style.display = "block";
 	}
@@ -16,7 +17,7 @@ window.addEventListener('load', function() {
 		prizgiCakanje();
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4 && xhttp.status == 200) {
+			if (xhttp.readyState == 4 && xhttp.status == 200) { //ko bo imel pripravljen streznik podatke naredi to
 				var datoteke = JSON.parse(xhttp.responseText);
 				
 				var datotekeHTML = document.querySelector("#datoteke");
@@ -25,7 +26,18 @@ window.addEventListener('load', function() {
 					var datoteka = datoteke[i];
 					
 					var velikost = datoteka.velikost;
-					var enota = "B";
+					if(velikost <= 1000){
+						var enota = "B";
+					}
+					else if(velikost <= 1000000){
+						var enota = "KB";
+					}
+					else if(velikost <= 1000000000){
+						var enota = "MB";
+					}
+					else{
+						var enota = "GB";
+					}
 					
 					datotekeHTML.innerHTML += " \
 						<div class='datoteka senca rob'> \
@@ -42,7 +54,11 @@ window.addEventListener('load', function() {
 				ugasniCakanje();
 			}
 		};
+		xhttp.open("GET", "/datoteke", true); //naredi zahtevo tipa get, / je home url, true je asinhrono
+		xhttp.send(); //poslji zahtevo
 	}
+	
+	pridobiSeznamDatotek();
 	
 	var brisi = function(event) {
 		prizgiCakanje();
