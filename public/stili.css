@@ -43,7 +43,7 @@ telo {
 .akcije {
 	position: relative; 
 	float: right;
-	color: #C30C21;
+	color: #66DD33;
 }
 
 .akcije span:hover {
@@ -58,15 +58,22 @@ a {
 
 .rob {
 	border: 1px solid transparent; 
-	border-color: #C30C21; 
+	border-color: #66DD33; 
 	border-radius: 4px; 
 }
 
 .senca {
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
 
 #nalozi {
+    width: 200px;
+    background: white;
+    height: 50px;
+    font-size: 18px;
+}
+
+#test {
     width: 200px;
     background: white;
     height: 50px;

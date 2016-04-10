@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>..:: FriBox ::..</title>
+    <title>..:: ODLAGALISCE ::..</title>
     <meta charset="UTF-8">
     
     <link rel="stylesheet" type="text/css" href="stili.css">
@@ -16,12 +16,13 @@
 	<table style="width: calc(100% - 20px);">
 		<tr>
 			<td>
-				<img src="fribox.png" />
+				<img src="logo.png" />
 			</td>
 			<td style="float: right;">
 				<form action="/nalozi" method="post" enctype="multipart/form-data">
 					<input type="file" id="datoteka" style="height: 50px; margin-right: 20px;" name="upload">
-					<button id="nalozi" class="rob senca" type="submit">Naloži novo datoteko</button>	
+					<button id="nalozi" class="rob senca" type="submit">Naloži novo datoteko</button>
+					<button id="test" class="rob senca" type="submit" formaction="/testiraj">Testiraj</button>
 				</form>
 			</td>
 		</tr>
