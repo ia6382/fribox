@@ -2,7 +2,8 @@ if (!process.env.PORT) {
     process.env.PORT = 8080;
 }
 
-var N = 2;
+var N = 500;
+var postanek = 0; // v milisekundah
 
 var mime = require('mime');
 var formidable = require('formidable');
@@ -25,7 +26,9 @@ var streznik = http.createServer(function(zahteva, odgovor) {
    } else if (zahteva.url == "/nalozi") {
        naloziDatoteko(zahteva, odgovor);
    } else if (zahteva.url == "/testiraj") {
-       console.log(zahteva.url);
+       console.log("----TESTIRAM---------");
+       console.log("----delay: "+postanek+" ms");
+       console.log("----stevilo datotek: "+N);
        testirajDatoteko(zahteva, odgovor);
    } else if (zahteva.url.startsWith('/poglej')) {
        posredujStaticnoVsebino(odgovor, dataDir + zahteva.url.replace("/poglej", ""), "");
@@ -52,11 +55,11 @@ function posredujStaticnoVsebino(odgovor, absolutnaPotDoDatoteke, mimeType) {
                     } else {
                         posredujDatoteko(odgovor, absolutnaPotDoDatoteke, datotekaVsebina, mimeType);
                     }
-                })
+                });
             } else {
                 posredujNapako404(odgovor);
             }
-        })
+        });
 }
 
 function posredujDatoteko(odgovor, datotekaPot, datotekaVsebina, mimeType) {
@@ -85,10 +88,12 @@ function posredujSeznamDatotek(odgovor) {
             odgovor.write(JSON.stringify(rezultat));
             odgovor.end();      
         }
-    })
+    });
 }
 
-var datoteka
+var ime;
+var koncnica;
+var zacasnaPot;
 
 function naloziDatoteko(zahteva, odgovor) {
     var form = new formidable.IncomingForm();
@@ -99,7 +104,7 @@ function naloziDatoteko(zahteva, odgovor) {
  
     form.on('end', function(fields, files) {
         var zacasnaPot = this.openedFiles[0].path;
-        datoteka = this.openedFiles[0].name;
+        var datoteka = this.openedFiles[0].name;
         console.log("nalagam"+ " "+ zacasnaPot+ " "+ datoteka);
         fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  
             if (napaka) {
@@ -112,47 +117,52 @@ function naloziDatoteko(zahteva, odgovor) {
 }
 
 ////////////////////////////   TEST    ////////////////////////////////////////////
+
+function timeout(i, zahteva, odgovor) {
+  setTimeout(function() {
+      var t = process.hrtime();
+      naloziDat(i, zahteva, odgovor, zacasnaPot, function(indeks){
+        t = process.hrtime(t);
+        //console.log(t[0]+" s, "+((t[1] / 1000000).toFixed(2))+" ms.");
+        console.log("dat. "+i+": "+t[0]+" s, "+((t[1] / 1000000).toFixed(2))+" ms.");
+        brisiDat(odgovor, dataDir+ime[1]+indeks+koncnica[1], function(){
+        });
+    });
+  },i*postanek);
+}
+
 function testirajDatoteko(zahteva, odgovor){
-    
-    zacetniPrenos(zahteva, odgovor, function(zacasnaPot){
-        brisiDat(odgovor, dataDir+zahteva.url.replace("/testiraj","")+datoteka, function(absolutnaPotDoDatoteke){
+    zacetniPrenos(zahteva, odgovor, function(){
+        brisiDat(odgovor, dataDir+ime[1]+koncnica[1], function(){
             console.log("*");
             
-            for(var i = 0;i < N;i ++){ //ne gre sinhrono
-                !function outer(i){
-                    naloziDat(zahteva, odgovor, zacasnaPot, function(napaka){
-                        brisiDat(odgovor, absolutnaPotDoDatoteke, function(pot){
-                            console.log("**");
-                        });
-                    });
-                }(i)
+            for(var i = 0;i < N;i ++){
+                timeout(i, zahteva, odgovor);
             }
         });
     });
-
 }
 
-var naloziDat = function(zahteva, odgovor, zacasnaPot, callback) {
-    console.log("testing "+ zacasnaPot+ " "+ datoteka);
+var naloziDat = function(indeks, zahteva, odgovor, zacasnaPot, callback) {
+    //console.log("nalagam: "+ dataDir + ime[1] + indeks + koncnica[1]);
     
-    fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  //kopiraj dat iz zacasnaPot v dataDir+datoteka
+    fs.copy(zacasnaPot, dataDir + ime[1] + indeks + koncnica[1], function(napaka) {  //kopiraj dat iz zacasnaPot v dataDir+datoteka
         if (napaka) {
-            posredujNapako500(odgovor);
+            console.log("error nalaganje");
         } else {
-            posredujOsnovnoStran(odgovor);
-            callback(napaka);
+            callback(indeks);
         }
     });
 }
 
 var brisiDat = function(odgovor, absolutnaPotDoDatoteke, callback){
-    console.log("Going to delete an existing file: "+absolutnaPotDoDatoteke);
+    //console.log("brisem: "+absolutnaPotDoDatoteke);
+    //console.log(" ");
     fs.unlink(absolutnaPotDoDatoteke, function(err) {
         if (err) {
             return console.error(err);
         } else {
-            posredujOsnovnoStran(odgovor); 
-            callback(absolutnaPotDoDatoteke);
+            callback();
         }
     });
 }
@@ -165,15 +175,24 @@ var zacetniPrenos = function (zahteva, odgovor, callback){
     });
  
     form.on('end', function(fields, files) {
-        var zacasnaPot = this.openedFiles[0].path;
-        datoteka = this.openedFiles[0].name;
-        console.log("nalagam"+ " "+ zacasnaPot+ " "+ datoteka);
+        
+        var imeReg = /(.+?(?=\..*))/;
+        var koncnicaReg = /.*(\..*)/;
+        zacasnaPot = this.openedFiles[0].path;
+        var datoteka = this.openedFiles[0].name;
+        
+        ime = datoteka.match(imeReg);
+        koncnica = datoteka.match(koncnicaReg);
+        
+        var velikost = this.openedFiles[0].size;
+        console.log("----velikost: "+ velikost + " b");
+        console.log("zacetna datoteka: "+ zacasnaPot+ " "+ datoteka);
         fs.copy(zacasnaPot, dataDir + datoteka, function(napaka) {  
             if (napaka) {
                 posredujNapako500(odgovor);
             } else {
                 posredujOsnovnoStran(odgovor);  
-                callback(zacasnaPot);
+                callback();
             }
         });
     });
