@@ -22,7 +22,8 @@
 				<form action="/nalozi" method="post" enctype="multipart/form-data">
 					<input type="file" id="datoteka" style="height: 50px; margin-right: 20px;" name="upload">
 					<button id="nalozi" class="rob senca" type="submit">Naloži novo datoteko</button>
-					<button id="test" class="rob senca" type="submit" formaction="/testiraj">Testiraj</button>
+					<button id="test" class="rob senca" type="submit" formaction="/testiraj">Testiraj T2</button>
+					<button id="t1" class="rob senca" type="button">Testiraj T1 in T2</button>
 				</form>
 			</td>
 		</tr>
@@ -38,56 +39,5 @@
 <noga>
 	<img src="fri.png" width="100px" />
 </noga>
-
-<!--<table>
-	<tr><td>Text to Save:</td></tr>
-	<tr>
-		<td colspan="3">
-			<textarea id="inputTextToSave" style="width:512px;height:256px"></textarea>
-		</td>
-	</tr>
-	<tr>
-		<td><button onclick="saveTextAsFile()">Save Text to File</button></td>
-	</tr>
-</table>
-
-<script type='text/javascript'>
-
-function saveTextAsFile()
-{
-	var textToWrite = document.getElementById("inputTextToSave").value;
-	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-	var fileNameToSaveAs = "meritve.txt";
-
-	var downloadLink = document.createElement("a");
-	downloadLink.download = fileNameToSaveAs;
-	downloadLink.innerHTML = "Download File";
-	if (window.webkitURL != null)
-	{
-		// Chrome allows the link to be clicked
-		// without actually adding it to the DOM.
-		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-	}
-	else
-	{
-		// Firefox requires the link to be added to the DOM
-		// before it can be clicked.
-		downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-		downloadLink.onclick = destroyClickedElement;
-		downloadLink.style.display = "none";
-		document.body.appendChild(downloadLink);
-	}
-
-	downloadLink.click();
-}
-
-function destroyClickedElement(event)
-{
-	document.body.removeChild(event.target);
-}
-
-</script>
--->
-
 </body>
 </html>

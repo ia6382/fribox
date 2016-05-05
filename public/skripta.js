@@ -80,4 +80,21 @@ window.addEventListener('load', function() {
 		xhttp.open("GET", "/brisi/"+this.getAttribute("datoteka"), true);
 		xhttp.send();
 	}
+	
+	var posljiZahtevek = function(event) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				
+				var t3 = new Date().getTime()-xhttp.responseText;
+				alert(t3);
+				window.location = "/";
+			}
+		};
+		var t1 = new Date().getTime();
+		xhttp.open("GET", "/zahtevek/"+t1, true);
+		xhttp.send();
+	}
+	
+	document.querySelector("#t1").addEventListener('click', posljiZahtevek); 
 });
